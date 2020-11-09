@@ -1,0 +1,11 @@
+app:
+  build: .
+  ports:
+    - "80:5000"
+  links:
+    - db
+db:
+  image: mongo:4.4.1
+  volumes : 
+    - "./mongodata:/data/db" 
+  
