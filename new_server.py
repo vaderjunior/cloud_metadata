@@ -25,9 +25,46 @@ class CustomEncoder(json.JSONEncoder):
         return o
 
 
-@app.route('/')
+@app.route('/', methods=['POST', 'GET'])
 def hello():
+    return '''
+    <body>
+        <h2>Welcome </h2>
+        <p>Enter <strong>username</strong> and <strong>password</strong> to login as admin or choose guest</p>
+
+        <form method="POST" action="/login" enctype="multipart/form-data">
+            <label for="uname">User Name:</label><br>
+            <input type="text" id="uname" name="uname"><br>
+            <label for="pass">Password:</label><br>
+            <input type="text" id="pass" name="pass"><br><br>
+            <input type="submit" value="Submit">
+        </form>
+        <button
+            onclick="location.href='/home_guest'"
+            type="button"
+          >
+          Login as Guest</button>
+        
+
+    </body>
+'''
+
+
+@app.route('/login', methods=['POST', 'GET'])
+def login():
+    if(request.form.get('uname') == "admin" and request.form.get('pass') == "admin"):
+        return render_template('admin_redirect.html')
+    return render_template("404.html")
+
+
+@app.route('/home_admin')
+def home_admin():
     return render_template('index.html')
+
+
+@app.route('/home_guest')
+def home_guest():
+    return render_template('index2.html')
 
 
 @app.route('/upload')
@@ -75,6 +112,35 @@ def create():
             'username'), 'image_name': image.filename, 'metadata': json.loads(json.dumps(exif, cls=CustomEncoder))})
 
         return 'Done!'
+
+
+# @app.route('/file/<filename>')
+# def file(filename):
+#    return mongo.send_file(filename)
+
+@app.route('/search')
+def index2():
+    return '''
+        <form method="GET" action="/view" enctype="multipart/form-data">
+            <label for="image_name">Image name</label>
+            <input type="text" id="image_name" name="image_name"><br><br>
+            <label for="ISOSpeedRating">Enter ISO Speed Rating</label>
+            <input type="text" id="ISOSpeedRating" name="ISOSpeedRating"><br><br>
+            <input type="submit">
+        </form>
+    '''
+
+
+@app.route('/view', methods=['POST', 'GET'])
+def show():
+    image_name = request.args.get('image_name')
+    ISO = request.args.get('ISOSpeedRating')
+    if image_name != '':
+        return mongo.send_file(request.args.get('image_name'))
+    if ISO != '':
+        return mongo.send_file(request.args.get('metadata.ISOSpeedRating' == ISO))
+
+    return render_template("404.html")
 
 
 if __name__ == '__main__':
