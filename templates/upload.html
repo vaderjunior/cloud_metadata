@@ -1,0 +1,18 @@
+<html>
+  <style>
+    form {
+      margin: 0 auto;
+      width: 2500px;
+    }
+  </style>
+  <body>
+    <form
+      action="{{ url_for('upload') }}"
+      method="POST"
+      enctype="multipart/form-data"
+    >
+      <input type="file" name="image" multiple />
+      <input type="submit" />
+    </form>
+  </body>
+</html>
