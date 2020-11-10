@@ -2,12 +2,12 @@ from flask import Flask, request, url_for, render_template
 from flask_pymongo import PyMongo
 from PIL import Image
 from PIL.ExifTags import TAGS
-import gridfs
+#import gridfs
 import json
 import binascii
 from PIL.TiffImagePlugin import IFDRational
 app = Flask(__name__)
-app.config['MONGO_URI'] = 'mongodb://localhost:27017/testdb'
+app.config['MONGO_URI'] = 'mongodb://db:27017/testdb'
 mongo = PyMongo(app)
 
 
@@ -97,7 +97,7 @@ def create():
             print("Error")
             pass
         exif = {}
-        for tag, value in image2._getexif().items():
+        for tag, value in dict(image2.getexif()).items():
 
             if tag in TAGS:
                 exif[TAGS[tag]] = value
@@ -144,4 +144,4 @@ def show():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True,host="0.0.0.0",port=5000)
