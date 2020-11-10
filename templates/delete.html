@@ -1,4 +1,5 @@
 <html>
+  <title></title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css" />
   <link
@@ -6,28 +7,23 @@
     href="https://fonts.googleapis.com/css?family=Allerta+Stencil"
   />
   <style>
-    form {
-      margin: 0 auto;
-      width: 2500px;
-    }
     .w3-allerta {
       font-family: 'Allerta Stencil', Sans-serif;
     }
   </style>
   <body>
-    <div class="w3-container w3-teal w3-center w3-allerta">
+    <div class="w3-container w3-red w3-center w3-allerta">
       <p class="w3-xlarge" style="font-size: 50px">
-        Enter value of any of the fields to Search
+        Enter Image Name to Delete
       </p>
     </div>
-
-    <form
-      action="{{ url_for('upload') }}"
-      method="POST"
-      enctype="multipart/form-data"
-    >
-      <input type="file" name="image" multiple />
-      <input type="submit" />
-    </form>
   </body>
+
+  <br /><br />
+  <form method="GET" action="/delete" enctype="multipart/form-data">
+    <label for="image_name">Image name</label>
+    <input type="text" id="image_name" name="image_name" /><br /><br />
+
+    <input type="submit" />
+  </form>
 </html>
