@@ -111,7 +111,7 @@ def create():
         mongo.db.metadata.insert({'username': request.form.get(
             'username'), 'image_name': image.filename, 'metadata': json.loads(json.dumps(exif, cls=CustomEncoder))})
 
-        return 'Done!'
+        return render_template('admin_redirect.html')
 
 
 # @app.route('/file/<filename>')
@@ -144,4 +144,4 @@ def show():
 
 
 if __name__ == '__main__':
-    app.run(debug=True,host="0.0.0.0",port=5000)
+    app.run(debug=True, host="0.0.0.0", port=5000)
