@@ -3,14 +3,14 @@ from flask_pymongo import PyMongo
 from pymongo import MongoClient
 from PIL import Image
 from PIL.ExifTags import TAGS
-import gridfs
+#import gridfs
 import json
 import binascii
 from PIL.TiffImagePlugin import IFDRational
 app = Flask(__name__)
-app.config['MONGO_URI'] = 'mongodb://localhost:27017/testdb'
+app.config['MONGO_URI'] = 'mongodb://db:27017/testdb'
 mongo = PyMongo(app)
-client = MongoClient("localhost", 27017, maxPoolSize=50)
+client = MongoClient("db", 27017, maxPoolSize=50)
 db2 = client["testdb"]
 collection = db2['metadata']
 
@@ -32,8 +32,23 @@ class CustomEncoder(json.JSONEncoder):
 @app.route('/', methods=['POST', 'GET'])
 def hello():
     return '''
-    <body>
-        <h2>Welcome </h2>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Allerta+Stencil">
+        <style>
+        .w3-allerta {
+             font-family: "Allerta Stencil", Sans-serif;
+            }
+        </style>
+        <body>
+
+        <div class="w3-container w3-cyan w3-center w3-allerta">
+          <p class="w3-xlarge" style="font-size:50px;">WELCOME</p>
+
+        </div>
+
+    <div align ="center">
+
         <p>Enter <strong>username</strong> and <strong>password</strong> to login as admin or choose guest</p>
 
         <form method="POST" action="/login" enctype="multipart/form-data">
@@ -48,7 +63,7 @@ def hello():
             type="button"
           >
           Login as Guest</button>
-
+          </div>
 
     </body>
 '''
@@ -88,7 +103,7 @@ def index():
           <p class="w3-xlarge" style="font-size:50px;">Upload Images</p>
 
         </div>
-
+        <div align="center">
         <form method="POST" action="/create" enctype="multipart/form-data">
             <br></br>
             <label for="uname">User name</label>
@@ -96,6 +111,7 @@ def index():
             <input type="file" name="image"><br><br>
             <input type="submit">
         </form>
+        </div>
     '''
 
 
@@ -117,7 +133,7 @@ def create():
             print("Error")
             pass
         exif = {}
-        for tag, value in image2._getexif().items():
+        for tag, value in dict(image2.getexif()).items():
 
             if tag in TAGS:
                 exif[TAGS[tag]] = value
@@ -159,7 +175,7 @@ def index2():
         </div>
 
         </body>
-
+        <div align="center">
         <br><br>
         <form method="GET" action="/view" enctype="multipart/form-data">
 
@@ -183,6 +199,12 @@ def index2():
 
             <input type="submit">
         </form>
+        <button
+      onclick="location.href='/home_admin'"
+    >
+      Home
+    </button>
+        </div>
     '''
 
 
@@ -199,6 +221,7 @@ def delete():
         return render_template('404_del.html')
     collection.delete_one({'image_name': image_name1})
     return '''
+    <div align="center">
     <h1><b>Image Deleted</b></h1><br><br>
     <button
             onclick="location.href='/home_admin'"
@@ -206,6 +229,8 @@ def delete():
           >
             Go back to Home Page
           </button>
+
+    </div>
     '''
 
 
@@ -219,7 +244,12 @@ def show():
     ImageWidth = request.args.get('ImageWidth')
     FocalLength = request.args.get('FocalLength')
     if image_name != '':
-        return mongo.send_file(request.args.get('image_name'))
+        dic = collection.find_one({"image_name": image_name})
+        print(dic)
+        if dic == None:
+            return render_template('404.html')
+        else:
+            return mongo.send_file(request.args.get('image_name'))
     if ISO != '':
         ISO = int(ISO)
         dic = collection.find_one({"metadata.ISOSpeedRatings": ISO})
@@ -270,4 +300,4 @@ def show():
 
 if __name__ == '__main__':
 
-    app.run(debug=True)
+    app.run(debug=True,host="0.0.0.0",port=5000)
